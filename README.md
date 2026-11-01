@@ -1,46 +1,77 @@
-# App Menu Editor（应用菜单编辑器）
+# App Menu Editor
 
-![screenshot](screenshot.png)
+English | [中文](README.zh.md)
 
-Dux Shell (DMS 2.0) 插件：在 Dash 里浏览用户和系统应用目录，创建、编辑、删除应用启动项（`.desktop` 文件），适合给没有自带 `.desktop` 文件的应用补一个启动器。
+| Browse applications | Edit a launcher |
+| --- | --- |
+| ![Browse applications](screenshot-list.png) | ![Edit a launcher](screenshot-editor.png) |
 
-> Browse and edit application launchers from the dash. Scans user and system XDG application directories, hides `NoDisplay` entries by default, writes overrides to the user directory, and supports environment variables and automatic icon detection.
+A Dux Shell (DMS 2.0) plugin for browsing, creating, and editing application launchers (`.desktop` files) directly from the dash. It is useful for apps that ship without a launcher, and for overriding system entries without touching `/usr/share`.
 
-## 安装
+## Features
 
-把整个 `AppMenuEditor` 目录放到：
+- Scans user and system XDG application directories, not just `~/.local/share/applications`
+- Hides `Hidden=true` and `NoDisplay=true` entries by default, matching the system app menu
+- User entries override system entries with the same file name (XDG precedence)
+- System entries are marked with a **System** badge
+- Editing a system entry writes a user override to `~/.local/share/applications`
+- System entries cannot be deleted directly; save an override first, then delete the override
+- Create and edit name, command, icon, comment, categories, and terminal mode
+- Configure multiple environment variables, saved as an `env KEY=VALUE ...` prefix
+- Parses existing `env` prefixes back into the variable editor
+- Detects an icon from the command when `Icon=` is empty
+- Optional executable picker (`kdialog` or `zenity`) and icon picker (`kdialog`)
+- Test-run a command before saving
+- Preserves unknown keys, localized keys, and `[Desktop Action ...]` groups
+- One-shot `scan.py` scan keeps the list fast and avoids creating hundreds of QML objects
+- Simplified Chinese translation included
+
+## Installation
+
+### From the plugin registry
+
+After the plugin is listed in the registry:
+
+```bash
+dms plugins install appMenuEditor
+```
+
+Or open **Settings → Plugins → Browse** and search for **App Menu Editor**.
+
+### Manual
+
+Copy the plugin directory to:
 
 ```text
 ~/.config/dms/plugins/AppMenuEditor/
 ```
 
-然后让 DMS 重新扫描并启用插件：
+Then scan and enable it:
 
 ```bash
 dms ipc call plugin-scan scan
 dms ipc call plugins enable appMenuEditor
 ```
 
-如果插件已经加载，修改 QML 后可以热重载：
+After changing QML files:
 
 ```bash
 dms ipc call plugins reload appMenuEditor
 ```
 
-## 打开
+## Open
 
-- Dash 顶部标签：**应用菜单编辑器**
-- 应用启动器（Launcher）搜索：输入 `!app`，选择 **应用菜单编辑器**
-
-命令行直接打开：
+- Dash tab: **App Menu Editor**
+- Launcher: type `!app` and choose **App Menu Editor**
+- CLI:
 
 ```bash
 dms ipc call dash open plugin_appMenuEditor
 ```
 
-## 数据来源
+## Data sources
 
-插件会扫描以下目录，并按 XDG 规则去重（用户目录优先）：
+The plugin scans these directories in order and de-duplicates by desktop file name, with the user directory taking precedence:
 
 ```text
 ~/.local/share/applications
@@ -52,100 +83,101 @@ $XDG_DATA_DIRS/*/applications
 /var/lib/snapd/desktop/applications
 ```
 
-因此 Firefox、Clash Verge 等系统应用也会出现。默认不显示 `NoDisplay=true` 的条目，所以 Clash Verge 的协议处理入口（`clash-verge-handler.desktop`）不会出现，显示的是系统菜单里那个带 `Comment=Clash Verge Rev` 的 `Clash Verge.desktop`。
+This is why Firefox, Clash Verge, and other system applications appear. `NoDisplay` entries are hidden by default, so Clash Verge's protocol handler (`clash-verge-handler.desktop`) is hidden and the real `Clash Verge.desktop` entry with `Comment=Clash Verge Rev` is shown.
 
-列表由 `scan.py` 一次性扫描并生成，不会为每个 `.desktop` 创建 QML 对象；只有点开某个条目编辑时才读取原文件内容，避免列表卡顿和内存占用。
+To include hidden entries, enable **Show hidden entries** in **Settings → Plugins → App Menu Editor**.
 
-如果希望在列表中看到隐藏条目，在 **设置 → 插件 → App Menu Editor** 里打开 **Show hidden entries**。
+## Usage
 
-## 功能
+### Browse
 
-- 列出用户目录和系统目录中的 `.desktop` 条目（XDG 应用目录）
-- 默认隐藏 `Hidden=true` / `NoDisplay=true` 条目，可在插件设置中打开显示
-- 用户目录中的同名条目优先于系统条目（符合 XDG 规则）
-- 系统条目显示「系统」标记；编辑保存时会在用户目录创建同名覆盖项
-- 系统条目不能直接删除；需要先保存为用户覆盖项，再删除覆盖项
-- 搜索、显示/隐藏 `Hidden=true` / `NoDisplay=true` 条目
-- 新建启动项：名称、命令、图标、注释、分类、是否在终端运行
-- 支持配置多个环境变量，保存为 `env KEY=VALUE ...` 前缀
-- 未填写图标时，会根据命令自动识别图标（例如 `clash-verge`）
-- 编辑已有启动项，保留未知字段、本地化字段和 `[Desktop Action ...]` 分组
-- 删除前需要二次确认
-- 通过文件选择器挑选可执行文件（`kdialog` 或 `zenity`）
-- 通过 KDE 图标选择器挑选图标（`kdialog`）
-- “试运行”按钮可以在保存前测试命令
-- 保存/删除后自动刷新 `update-desktop-database`，并在存在时刷新 `kbuildsycoca6/5`
-- 支持中文界面（`translations/zh_CN.json`）
+- Search by name, comment, command, file name, or category
+- Click **Refresh** after installing or removing applications
+- Click a row to edit it
 
-## 字段对应关系
+### Create
 
-| 界面字段 | `.desktop` 键 |
+Click **New**, fill in the fields, then **Save**. The file name is generated from the name, for example `My App` → `my-app.desktop`. If the name collides, `-2`, `-3`, etc. is appended.
+
+### Edit
+
+Click an existing entry. Saving preserves unknown keys, localized keys, and desktop actions.
+
+For a system entry, saving creates an override in `~/.local/share/applications`. Deleting that override makes the system entry visible again.
+
+### Delete
+
+Deleting a user entry requires a second confirmation. System entries cannot be deleted directly; save an override first.
+
+## Fields
+
+| UI field | `.desktop` key |
 | --- | --- |
-| 名称 | `Name` |
-| 命令 | `Exec` |
-| 图标 | `Icon` |
-| 注释 | `Comment` |
-| 分类 | `Categories` |
-| 在终端中运行 | `Terminal` |
+| Name | `Name` |
+| Command | `Exec` |
+| Icon | `Icon` |
+| Comment | `Comment` |
+| Categories | `Categories` |
+| Run in terminal | `Terminal` |
 
-保存时会写入 `Type=Application`。`GenericName`、`Keywords`、本地化键（如 `Name[zh_CN]`）以及其它未知键不会被删除。
+`Type=Application` is always written. `GenericName`, `Keywords`, localized keys such as `Name[zh_CN]`, and unknown keys are not removed.
 
-## 环境变量
+## Environment variables
 
-在编辑器中点击“环境变量”旁边的“添加”，可以逐行填写变量名和值，支持多个变量。保存时会自动加在命令前面：
+Click **Add** next to **Environment variables** to add rows of name/value pairs. Multiple variables are supported. They are written before the command:
 
 ```ini
 Exec=env http_proxy=http://127.0.0.1:7890 https_proxy=http://127.0.0.1:7890 /opt/app/app
 ```
 
-如果值里包含空格，会自动加引号：
+Values containing spaces are quoted:
 
 ```ini
 Exec=env "GREETING=hello world" /opt/app/app
 ```
 
-编辑已有启动项时，如果 `Exec` 以 `env KEY=VALUE ...` 开头，会自动拆分回环境变量列表；“试运行”也会带上这些变量。
+When editing an existing entry whose `Exec` starts with `env KEY=VALUE ...`, the prefix is split back into the variable list. **Test** also runs with those variables.
 
-## 图标
+## Icons
 
-图标字段可以填写图标主题名称（如 `firefox`）或绝对路径。留空时会按命令自动推断，例如：
+The icon field accepts a theme icon name (for example `firefox`) or an absolute path. If it is left empty, the plugin infers an icon from the command:
 
 - `Exec=/usr/bin/clash-verge %u` → `clash-verge`
 - `Exec=flatpak run org.example.App` → `org.example.App`
 
-自动推断只会在图标存在时写入 `Icon=`，不会写入无效名称。
+An inferred icon is only written to `Icon=` when it resolves to an installed icon.
 
-## 文件名
-
-新建时文件名由名称自动生成，例如 `My App` → `my-app.desktop`；如果重名会追加 `-2`、`-3`。文件只写入用户目录，不会修改 `/usr/share/applications`。
-
-编辑系统条目时，保存会在 `~/.local/share/applications` 中创建同名覆盖文件。删除这个覆盖文件后，系统条目会重新出现。
-
-## 依赖
+## Dependencies
 
 - DMS 2.0+
-- `python3`（用于一次性扫描所有应用目录，比逐个 QML 读取快很多）
-- 可选：`kdialog`（可执行文件 + 图标选择器）或 `zenity`（可执行文件选择器）
-- 可选：`update-desktop-database`、`kbuildsycoca6`/`kbuildsycoca5`（用于刷新桌面数据库）
+- `python3` for the one-shot application scan
+- Optional: `kdialog` or `zenity` for the executable picker
+- Optional: `kdialog` for the icon picker
+- Optional: `update-desktop-database`, `kbuildsycoca6`/`kbuildsycoca5` for refreshing desktop databases
 
-没有文件选择器时仍然可以手动输入命令和图标名称。
+Without a file dialog, commands and icon names can still be entered manually.
 
-## 注意
+## Notes
 
-- 删除操作是直接删除文件，不进入回收站。
-- 编辑已有文件会保留原有权限和未知字段，但会重排受管字段的顺序。
-- 系统级 `.desktop` 会出现在列表中，但不会被直接修改；保存时会写入用户目录的同名覆盖项。
+- Deletion removes the file directly; it does not use the trash.
+- Only the user application directory is written. System `.desktop` files are never modified.
+- The plugin lists all entries from the XDG directories; the system menu may additionally filter `OnlyShowIn`/`NotShowIn`/`TryExec`.
+- The `scan.py` scan takes roughly 70 ms for ~280 entries on a typical system; editing reads only the selected file.
 
-## 文件结构
+## File structure
 
 ```text
 AppMenuEditor/
 ├── plugin.json
-├── AppMenuTab.qml          # Dash 标签页（列表 + 编辑器）
-├── AppMenuLauncher.qml     # !app 启动器入口
-├── scan.py                 # 一次性扫描/解析所有应用目录
-├── icon.svg                # 启动器彩色图标
-├── translations/
-│   └── zh_CN.json
-└── README.md
+├── AppMenuTab.qml          # Dash tab: list + editor
+├── AppMenuLauncher.qml     # !app launcher entry
+├── scan.py                 # one-shot application scanner
+├── icon.svg                # colored launcher icon
+├── screenshot.png          # registry preview (list + editor)
+├── screenshot-list.png
+├── screenshot-editor.png
+├── README.md
+├── README.zh.md
+└── translations/
+    └── zh_CN.json
 ```
