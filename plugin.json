@@ -1,7 +1,7 @@
 {
     "id": "appMenuEditor",
     "name": "App Menu Editor",
-    "description": "Browse and edit application launchers (.desktop files) from the dash, including system entries, environment variables, and automatic icon detection",
+    "description": "Browse application launchers from user and system directories, and create or edit user-level .desktop overrides with environment variables and automatic icon detection",
     "version": "1.0.0",
     "author": "fansir",
     "type": "composite",

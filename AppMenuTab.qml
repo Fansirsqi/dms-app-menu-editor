@@ -91,6 +91,12 @@ DashTabComponent {
     focusTarget: mode === "edit" ? nameField : searchField
     blocksTabNavigation: mode === "edit"
 
+    readonly property real headerHeight: Theme.iconButtonSize
+    readonly property real listRowHeight: Theme.iconSizeLarge + Theme.spacingL * 2
+    readonly property real listIconSize: Theme.iconSizeLarge + Theme.spacingXS
+    readonly property real editorIconSize: Theme.iconSizeLarge + Theme.spacingL
+    readonly property real badgeHeight: Theme.iconSizeMedium
+
     // ---------------------------------------------------------------- derived
 
     readonly property var filteredEntries: {
@@ -832,7 +838,7 @@ DashTabComponent {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: 40
+            height: root.headerHeight
             spacing: Theme.spacingM
 
             Column {
@@ -931,7 +937,7 @@ DashTabComponent {
                             readonly property bool entryIconReady: entryIcon.length > 0 && Paths.resolveIconPath(entryIcon).length > 0
 
                             width: entryColumn.width
-                            height: 60
+                            height: root.listRowHeight
                             radius: Theme.cornerRadius
                             color: hovered ? Theme.withAlpha(Theme.primary, 0.1) : "transparent"
 
@@ -943,17 +949,17 @@ DashTabComponent {
 
                                 AppIconRenderer {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    width: 36
-                                    height: 36
+                                    width: root.listIconSize
+                                    height: root.listIconSize
                                     iconValue: entryRow.entryIcon || "application-x-executable"
-                                    iconSize: 36
+                                    iconSize: root.listIconSize
                                     fallbackText: entryRow.entryIconReady ? "" : (entryRow.modelData.name || "?").charAt(0).toUpperCase()
                                     fallbackBackgroundColor: entryRow.entryIconReady ? "transparent" : Theme.surfaceLight
                                 }
 
                                 Column {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    width: parent.width - 36 - badgeRow.width - chevron.width - Theme.spacingM * 3
+                                    width: parent.width - root.listIconSize - badgeRow.width - chevron.width - Theme.spacingM * 3
                                     spacing: 2
 
                                     StyledText {
@@ -982,8 +988,8 @@ DashTabComponent {
                                     StyledRect {
                                         visible: entryRow.modelData.hidden === true
                                         width: hiddenBadge.implicitWidth + Theme.spacingS * 2
-                                        height: 20
-                                        radius: 10
+                                        height: root.badgeHeight
+                                        radius: Theme.cornerRadiusFull
                                         color: Theme.withAlpha(Theme.error, 0.15)
 
                                         StyledText {
@@ -998,8 +1004,8 @@ DashTabComponent {
                                     StyledRect {
                                         visible: entryRow.modelData.noDisplay === true
                                         width: noDisplayBadge.implicitWidth + Theme.spacingS * 2
-                                        height: 20
-                                        radius: 10
+                                        height: root.badgeHeight
+                                        radius: Theme.cornerRadiusFull
                                         color: Theme.withAlpha(Theme.surfaceVariantText, 0.15)
 
                                         StyledText {
@@ -1014,8 +1020,8 @@ DashTabComponent {
                                     StyledRect {
                                         visible: entryRow.modelData.terminal === true
                                         width: terminalBadge.implicitWidth + Theme.spacingS * 2
-                                        height: 20
-                                        radius: 10
+                                        height: root.badgeHeight
+                                        radius: Theme.cornerRadiusFull
                                         color: Theme.withAlpha(Theme.primary, 0.12)
 
                                         StyledText {
@@ -1030,8 +1036,8 @@ DashTabComponent {
                                     StyledRect {
                                         visible: entryRow.modelData.isUser === false
                                         width: systemBadge.implicitWidth + Theme.spacingS * 2
-                                        height: 20
-                                        radius: 10
+                                        height: root.badgeHeight
+                                        radius: Theme.cornerRadiusFull
                                         color: Theme.withAlpha(Theme.secondary, 0.15)
 
                                         StyledText {
@@ -1075,7 +1081,7 @@ DashTabComponent {
                             DIcon {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 name: "apps"
-                                size: 32
+                                size: Theme.iconSizeLarge
                                 color: Theme.surfaceVariantText
                             }
 
@@ -1104,7 +1110,7 @@ DashTabComponent {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            height: 24
+            height: Theme.iconSize
             spacing: Theme.spacingXS
 
             DIcon {
@@ -1145,7 +1151,7 @@ DashTabComponent {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            height: 40
+            height: root.headerHeight
             spacing: Theme.spacingS
 
             DActionButton {
@@ -1201,10 +1207,10 @@ DashTabComponent {
 
                     AppIconRenderer {
                         anchors.verticalCenter: parent.verticalCenter
-                        width: 48
-                        height: 48
+                        width: root.editorIconSize
+                        height: root.editorIconSize
                         iconValue: root.formIcon || "application-x-executable"
-                        iconSize: 40
+                        iconSize: Theme.iconButtonSize
                         fallbackText: root.formIconReady ? "" : (root.fieldName || "?").charAt(0).toUpperCase()
                         fallbackBackgroundColor: root.formIconReady ? "transparent" : Theme.surfaceLight
                     }
@@ -1212,7 +1218,7 @@ DashTabComponent {
                     DTextField {
                         id: nameField
                         outlined: true
-                        width: parent.width - 48 - Theme.spacingM
+                        width: parent.width - root.editorIconSize - Theme.spacingM
                         labelText: root.t("Name")
                         placeholderText: root.t("e.g. My App")
                         text: root.fieldName
@@ -1457,7 +1463,7 @@ DashTabComponent {
 
             Item {
                 width: parent.width
-                height: 40
+                height: root.headerHeight
 
                 Row {
                     anchors.right: parent.right
