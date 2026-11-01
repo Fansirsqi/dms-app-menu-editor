@@ -578,7 +578,7 @@ DashTabComponent {
         const seq = ++scanSeq;
         const script = Paths.strip(Qt.resolvedUrl("scan.py"));
         const locale = Qt.locale().name || "C";
-        Proc.runCommand("appMenuEditor.scan", ["python3", script, appsDir, locale].concat(appDirectories), (stdout, exitCode) => {
+        Proc.runCommand("appMenuEditor.scan", ["python3", "-S", script, appsDir, locale].concat(appDirectories), (stdout, exitCode) => {
             if (seq !== root.scanSeq)
                 return;
             if (exitCode !== 0) {
@@ -914,192 +914,185 @@ DashTabComponent {
             color: Theme.withAlpha(Theme.surfaceContainerHigh, 0.6)
             border.width: 0
 
-            DFlickable {
+            ListView {
+                id: entryList
                 anchors.fill: parent
                 clip: true
-                contentWidth: width
-                contentHeight: entryColumn.implicitHeight
+                model: root.filteredEntries
+                reuseItems: true
+                boundsBehavior: Flickable.StopAtBounds
+                cacheBuffer: root.listRowHeight * 2
 
-                Column {
-                    id: entryColumn
-                    width: parent.width
+                delegate: Rectangle {
+                    id: entryRow
 
-                    Repeater {
-                        model: root.filteredEntries
+                    required property var modelData
 
-                        delegate: Rectangle {
-                            id: entryRow
+                    readonly property bool hovered: rowMouse.containsMouse
+                    readonly property string entryIcon: entryRow.modelData.displayIcon || entryRow.modelData.icon || ""
+                    readonly property bool entryIconReady: entryIcon.length > 0 && Paths.resolveIconPath(entryIcon).length > 0
 
-                            required property var modelData
+                    width: entryList.width
+                    height: root.listRowHeight
+                    radius: Theme.cornerRadius
+                    color: hovered ? Theme.withAlpha(Theme.primary, 0.1) : "transparent"
 
-                            readonly property bool hovered: rowMouse.containsMouse
-                            readonly property string entryIcon: entryRow.modelData.displayIcon || entryRow.modelData.icon || ""
-                            readonly property bool entryIconReady: entryIcon.length > 0 && Paths.resolveIconPath(entryIcon).length > 0
+                    Row {
+                        anchors.fill: parent
+                        anchors.leftMargin: Theme.spacingS
+                        anchors.rightMargin: Theme.spacingM
+                        spacing: Theme.spacingM
 
-                            width: entryColumn.width
-                            height: root.listRowHeight
-                            radius: Theme.cornerRadius
-                            color: hovered ? Theme.withAlpha(Theme.primary, 0.1) : "transparent"
+                        AppIconRenderer {
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: root.listIconSize
+                            height: root.listIconSize
+                            iconValue: entryRow.entryIcon || "application-x-executable"
+                            iconSize: root.listIconSize
+                            fallbackText: entryRow.entryIconReady ? "" : (entryRow.modelData.name || "?").charAt(0).toUpperCase()
+                            fallbackBackgroundColor: entryRow.entryIconReady ? "transparent" : Theme.surfaceLight
+                        }
 
-                            Row {
-                                anchors.fill: parent
-                                anchors.leftMargin: Theme.spacingS
-                                anchors.rightMargin: Theme.spacingM
-                                spacing: Theme.spacingM
+                        Column {
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: parent.width - root.listIconSize - badgeRow.width - chevron.width - Theme.spacingM * 3
+                            spacing: 2
 
-                                AppIconRenderer {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    width: root.listIconSize
-                                    height: root.listIconSize
-                                    iconValue: entryRow.entryIcon || "application-x-executable"
-                                    iconSize: root.listIconSize
-                                    fallbackText: entryRow.entryIconReady ? "" : (entryRow.modelData.name || "?").charAt(0).toUpperCase()
-                                    fallbackBackgroundColor: entryRow.entryIconReady ? "transparent" : Theme.surfaceLight
+                            StyledText {
+                                width: parent.width
+                                text: entryRow.modelData.name
+                                font.pixelSize: Theme.fontSizeMedium
+                                font.weight: Font.Medium
+                                color: Theme.surfaceText
+                                elide: Text.ElideRight
+                            }
+
+                            StyledText {
+                                width: parent.width
+                                text: entryRow.modelData.comment || entryRow.modelData.exec || entryRow.modelData.fileName
+                                font.pixelSize: Theme.fontSizeSmall
+                                color: Theme.surfaceVariantText
+                                elide: Text.ElideRight
+                            }
+                        }
+
+                        Row {
+                            id: badgeRow
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: Theme.spacingXS
+
+                            StyledRect {
+                                visible: entryRow.modelData.hidden === true
+                                width: hiddenBadge.implicitWidth + Theme.spacingS * 2
+                                height: root.badgeHeight
+                                radius: Theme.cornerRadiusFull
+                                color: Theme.withAlpha(Theme.error, 0.15)
+
+                                StyledText {
+                                    id: hiddenBadge
+                                    anchors.centerIn: parent
+                                    text: root.t("Hidden")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    color: Theme.error
                                 }
+                            }
 
-                                Column {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    width: parent.width - root.listIconSize - badgeRow.width - chevron.width - Theme.spacingM * 3
-                                    spacing: 2
+                            StyledRect {
+                                visible: entryRow.modelData.noDisplay === true
+                                width: noDisplayBadge.implicitWidth + Theme.spacingS * 2
+                                height: root.badgeHeight
+                                radius: Theme.cornerRadiusFull
+                                color: Theme.withAlpha(Theme.surfaceVariantText, 0.15)
 
-                                    StyledText {
-                                        width: parent.width
-                                        text: entryRow.modelData.name
-                                        font.pixelSize: Theme.fontSizeMedium
-                                        font.weight: Font.Medium
-                                        color: Theme.surfaceText
-                                        elide: Text.ElideRight
-                                    }
-
-                                    StyledText {
-                                        width: parent.width
-                                        text: entryRow.modelData.comment || entryRow.modelData.exec || entryRow.modelData.fileName
-                                        font.pixelSize: Theme.fontSizeSmall
-                                        color: Theme.surfaceVariantText
-                                        elide: Text.ElideRight
-                                    }
-                                }
-
-                                Row {
-                                    id: badgeRow
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: Theme.spacingXS
-
-                                    StyledRect {
-                                        visible: entryRow.modelData.hidden === true
-                                        width: hiddenBadge.implicitWidth + Theme.spacingS * 2
-                                        height: root.badgeHeight
-                                        radius: Theme.cornerRadiusFull
-                                        color: Theme.withAlpha(Theme.error, 0.15)
-
-                                        StyledText {
-                                            id: hiddenBadge
-                                            anchors.centerIn: parent
-                                            text: root.t("Hidden")
-                                            font.pixelSize: Theme.fontSizeSmall
-                                            color: Theme.error
-                                        }
-                                    }
-
-                                    StyledRect {
-                                        visible: entryRow.modelData.noDisplay === true
-                                        width: noDisplayBadge.implicitWidth + Theme.spacingS * 2
-                                        height: root.badgeHeight
-                                        radius: Theme.cornerRadiusFull
-                                        color: Theme.withAlpha(Theme.surfaceVariantText, 0.15)
-
-                                        StyledText {
-                                            id: noDisplayBadge
-                                            anchors.centerIn: parent
-                                            text: "NoDisplay"
-                                            font.pixelSize: Theme.fontSizeSmall
-                                            color: Theme.surfaceVariantText
-                                        }
-                                    }
-
-                                    StyledRect {
-                                        visible: entryRow.modelData.terminal === true
-                                        width: terminalBadge.implicitWidth + Theme.spacingS * 2
-                                        height: root.badgeHeight
-                                        radius: Theme.cornerRadiusFull
-                                        color: Theme.withAlpha(Theme.primary, 0.12)
-
-                                        StyledText {
-                                            id: terminalBadge
-                                            anchors.centerIn: parent
-                                            text: root.t("Terminal")
-                                            font.pixelSize: Theme.fontSizeSmall
-                                            color: Theme.primary
-                                        }
-                                    }
-
-                                    StyledRect {
-                                        visible: entryRow.modelData.isUser === false
-                                        width: systemBadge.implicitWidth + Theme.spacingS * 2
-                                        height: root.badgeHeight
-                                        radius: Theme.cornerRadiusFull
-                                        color: Theme.withAlpha(Theme.secondary, 0.15)
-
-                                        StyledText {
-                                            id: systemBadge
-                                            anchors.centerIn: parent
-                                            text: root.t("System")
-                                            font.pixelSize: Theme.fontSizeSmall
-                                            color: Theme.secondary
-                                        }
-                                    }
-                                }
-
-                                DIcon {
-                                    id: chevron
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    name: "chevron_right"
-                                    size: Theme.iconSizeSmall
+                                StyledText {
+                                    id: noDisplayBadge
+                                    anchors.centerIn: parent
+                                    text: "NoDisplay"
+                                    font.pixelSize: Theme.fontSizeSmall
                                     color: Theme.surfaceVariantText
                                 }
                             }
 
-                            MouseArea {
-                                id: rowMouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.startEdit(entryRow.modelData)
+                            StyledRect {
+                                visible: entryRow.modelData.terminal === true
+                                width: terminalBadge.implicitWidth + Theme.spacingS * 2
+                                height: root.badgeHeight
+                                radius: Theme.cornerRadiusFull
+                                color: Theme.withAlpha(Theme.primary, 0.12)
+
+                                StyledText {
+                                    id: terminalBadge
+                                    anchors.centerIn: parent
+                                    text: root.t("Terminal")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    color: Theme.primary
+                                }
                             }
+
+                            StyledRect {
+                                visible: entryRow.modelData.isUser === false
+                                width: systemBadge.implicitWidth + Theme.spacingS * 2
+                                height: root.badgeHeight
+                                radius: Theme.cornerRadiusFull
+                                color: Theme.withAlpha(Theme.secondary, 0.15)
+
+                                StyledText {
+                                    id: systemBadge
+                                    anchors.centerIn: parent
+                                    text: root.t("System")
+                                    font.pixelSize: Theme.fontSizeSmall
+                                    color: Theme.secondary
+                                }
+                            }
+                        }
+
+                        DIcon {
+                            id: chevron
+                            anchors.verticalCenter: parent.verticalCenter
+                            name: "chevron_right"
+                            size: Theme.iconSizeSmall
+                            color: Theme.surfaceVariantText
                         }
                     }
 
-                    Item {
-                        width: entryColumn.width
-                        height: root.filteredEntries.length === 0 ? 140 : 0
-                        visible: root.filteredEntries.length === 0
+                    MouseArea {
+                        id: rowMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.startEdit(entryRow.modelData)
+                    }
+                }
+            }
 
-                        Column {
-                            anchors.centerIn: parent
-                            spacing: Theme.spacingS
+            Item {
+                anchors.fill: parent
+                visible: root.filteredEntries.length === 0
 
-                            DIcon {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                name: "apps"
-                                size: Theme.iconSizeLarge
-                                color: Theme.surfaceVariantText
-                            }
+                Column {
+                    anchors.centerIn: parent
+                    spacing: Theme.spacingS
 
-                            StyledText {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: root.searchText.length > 0 ? root.t("No matching entries") : root.t("No launchers yet")
-                                font.pixelSize: Theme.fontSizeMedium
-                                color: Theme.surfaceVariantText
-                            }
+                    DIcon {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        name: "apps"
+                        size: Theme.iconSizeLarge
+                        color: Theme.surfaceVariantText
+                    }
 
-                            StyledText {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                visible: root.searchText.length === 0
-                                text: root.t("Use New to create one")
-                                font.pixelSize: Theme.fontSizeSmall
-                                color: Theme.surfaceVariantText
-                            }
-                        }
+                    StyledText {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: root.searchText.length > 0 ? root.t("No matching entries") : root.t("No launchers yet")
+                        font.pixelSize: Theme.fontSizeMedium
+                        color: Theme.surfaceVariantText
+                    }
+
+                    StyledText {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        visible: root.searchText.length === 0
+                        text: root.t("Use New to create one")
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: Theme.surfaceVariantText
                     }
                 }
             }
