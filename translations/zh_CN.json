@@ -1,0 +1,200 @@
+{
+    "App Menu Editor": {
+        "App Menu Editor": "应用菜单编辑器"
+    },
+    "Create or edit application menu entries": {
+        "Create or edit application menu entries": "创建或编辑应用菜单启动项"
+    },
+    "Create or edit application menu entries (desktop files)": {
+        "Create or edit application menu entries (desktop files)": "创建或编辑应用菜单启动项（.desktop 文件）"
+    },
+    "Launch entries for apps that ship no .desktop file": {
+        "Launch entries for apps that ship no .desktop file": "为不提供 .desktop 文件的应用创建启动项"
+    },
+    "Browse and edit launchers from user and system app directories": {
+        "Browse and edit launchers from user and system app directories": "浏览和编辑用户与系统目录中的应用启动项"
+    },
+    "Refresh": {
+        "Refresh": "刷新"
+    },
+    "System": {
+        "System": "系统"
+    },
+    "This is a system entry. Saving creates an override in your user applications folder.": {
+        "This is a system entry. Saving creates an override in your user applications folder.": "这是系统条目。保存时会在你的用户应用目录中创建覆盖项。"
+    },
+    "System entries cannot be deleted": {
+        "System entries cannot be deleted": "系统条目不能直接删除"
+    },
+    "Save to create a user override first": {
+        "Save to create a user override first": "请先保存，创建用户覆盖项"
+    },
+    "System entries cannot be deleted; save to create a user override first": {
+        "System entries cannot be deleted; save to create a user override first": "系统条目不能直接删除；请先保存以创建用户覆盖项"
+    },
+    "Search entries": {
+        "Search entries": "搜索启动项"
+    },
+    "New": {
+        "New": "新建"
+    },
+    "New launcher": {
+        "New launcher": "新建启动项"
+    },
+    "No launchers yet": {
+        "No launchers yet": "还没有启动项"
+    },
+    "No matching entries": {
+        "No matching entries": "没有匹配的启动项"
+    },
+    "Use New to create one": {
+        "Use New to create one": "点击“新建”创建一个"
+    },
+    "Open launcher folder": {
+        "Open launcher folder": "打开启动项目录"
+    },
+    "Name": {
+        "Name": "名称"
+    },
+    "e.g. My App": {
+        "e.g. My App": "例如：我的应用"
+    },
+    "Name is required": {
+        "Name is required": "名称不能为空"
+    },
+    "Command": {
+        "Command": "命令"
+    },
+    "e.g. /opt/myapp/myapp --flag": {
+        "e.g. /opt/myapp/myapp --flag": "例如：/opt/myapp/myapp --flag"
+    },
+    "The command that starts the app": {
+        "The command that starts the app": "用于启动应用的命令"
+    },
+    "Command is required": {
+        "Command is required": "命令不能为空"
+    },
+    "Browse": {
+        "Browse": "浏览"
+    },
+    "Executables": {
+        "Executables": "可执行文件"
+    },
+    "Choose executable": {
+        "Choose executable": "选择可执行文件"
+    },
+    "Icon": {
+        "Icon": "图标"
+    },
+    "Icon name or path": {
+        "Icon name or path": "图标名称或路径"
+    },
+    "Icon theme name, e.g. firefox": {
+        "Icon theme name, e.g. firefox": "图标主题名称，例如 firefox"
+    },
+    "Auto-detected: %1": {
+        "Auto-detected: %1": "自动识别：%1"
+    },
+    "Pick": {
+        "Pick": "选择"
+    },
+    "Comment": {
+        "Comment": "注释"
+    },
+    "Optional description": {
+        "Optional description": "可选描述"
+    },
+    "Categories": {
+        "Categories": "分类"
+    },
+    "Separated by semicolons": {
+        "Separated by semicolons": "用分号分隔"
+    },
+    "Environment variables": {
+        "Environment variables": "环境变量"
+    },
+    "Variable name": {
+        "Variable name": "变量名"
+    },
+    "Value": {
+        "Value": "值"
+    },
+    "Add": {
+        "Add": "添加"
+    },
+    "Remove": {
+        "Remove": "移除"
+    },
+    "Optional; one row per variable, e.g. http_proxy = http://127.0.0.1:7890": {
+        "Optional; one row per variable, e.g. http_proxy = http://127.0.0.1:7890": "可选；每行一个变量，例如 http_proxy = http://127.0.0.1:7890"
+    },
+    "Invalid environment variable name: %1": {
+        "Invalid environment variable name: %1": "环境变量名无效：%1"
+    },
+    "Run in terminal": {
+        "Run in terminal": "在终端中运行"
+    },
+    "Test": {
+        "Test": "试运行"
+    },
+    "Delete": {
+        "Delete": "删除"
+    },
+    "Confirm delete": {
+        "Confirm delete": "确认删除"
+    },
+    "Cancel": {
+        "Cancel": "取消"
+    },
+    "Save": {
+        "Save": "保存"
+    },
+    "Back": {
+        "Back": "返回"
+    },
+    "Edit launcher": {
+        "Edit launcher": "编辑启动项"
+    },
+    "Unknown keys and Desktop Actions are preserved when saving.": {
+        "Unknown keys and Desktop Actions are preserved when saving.": "保存时会保留未知字段和 Desktop Actions。"
+    },
+    "Launcher created": {
+        "Launcher created": "启动项已创建"
+    },
+    "Launcher updated": {
+        "Launcher updated": "启动项已更新"
+    },
+    "Launcher deleted": {
+        "Launcher deleted": "启动项已删除"
+    },
+    "Could not save the launcher": {
+        "Could not save the launcher": "无法保存启动项"
+    },
+    "Could not delete the launcher": {
+        "Could not delete the launcher": "无法删除启动项"
+    },
+    "Could not create the launcher folder": {
+        "Could not create the launcher folder": "无法创建启动项目录"
+    },
+    "Could not scan applications": {
+        "Could not scan applications": "无法扫描应用列表"
+    },
+    "No file dialog available": {
+        "No file dialog available": "没有可用的文件选择对话框"
+    },
+    "Launched": {
+        "Launched": "已启动"
+    },
+    "Hidden": {
+        "Hidden": "已隐藏"
+    },
+    "Terminal": {
+        "Terminal": "终端"
+    },
+    "Show hidden entries": {
+        "Show hidden entries": "显示隐藏项"
+    },
+    "Include entries marked Hidden=true or NoDisplay=true": {
+        "Include entries marked Hidden=true or NoDisplay=true": "包含标记为 Hidden=true 或 NoDisplay=true 的条目"
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "id": "appMenuEditor",
+    "name": "App Menu Editor",
+    "description": "Create and edit application menu launchers (.desktop files) from the dash, with icon, executable, and environment variable editors",
+    "version": "1.0.0",
+    "author": "fansir",
+    "type": "composite",
+    "capabilities": ["dash-tab", "launcher"],
+    "icon": "apps",
+    "components": {
+        "dash": "./AppMenuTab.qml",
+        "launcher": "./AppMenuLauncher.qml"
+    },
+    "dash": {
+        "title": "App Menu Editor",
+        "icon": "apps",
+        "options": [
+            {
+                "key": "showHidden",
+                "text": "Show hidden entries",
+                "def": false,
+                "type": "toggle",
+                "description": "Include entries marked Hidden=true or NoDisplay=true"
+            }
+        ]
+    },
+    "trigger": "!app",
+    "dependencies": ["python3"],
+    "permissions": ["process"],
+    "requires_dms": ">=2.0.0"
+}
