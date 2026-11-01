@@ -147,7 +147,11 @@ AppMenuEditor/
 ├── AppMenuLauncher.qml     # !app 启动器入口
 ├── scan.py                 # 一次性扫描/解析所有应用目录
 ├── icon.svg                # 启动器彩色图标
-├── translations/
-│   └── zh_CN.json
-└── README.md
+├── screenshot.png          # 注册表预览图（列表 + 编辑器）
+├── screenshot-list.png
+├── screenshot-editor.png
+├── README.md               # English
+├── README.zh.md            # 中文
+└── translations/
+    └── zh_CN.json
 ```
