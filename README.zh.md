@@ -138,6 +138,12 @@ Exec=env "GREETING=hello world" /opt/app/app
 - 编辑已有文件会保留原有权限和未知字段，但会重排受管字段的顺序。
 - 系统级 `.desktop` 会出现在列表中，但不会被直接修改；保存时会写入用户目录的同名覆盖项。
 
+## 许可证
+
+MIT，见 [LICENSE](LICENSE)。
+
+截图中可能包含第三方应用图标和商标，其版权归各自所有者所有，仅用于识别用途；MIT 许可证不包含这些第三方商标。
+
 ## 文件结构
 
 ```text
@@ -152,6 +158,7 @@ AppMenuEditor/
 ├── screenshot-editor.png
 ├── README.md               # English
 ├── README.zh.md            # 中文
+├── LICENSE
 └── translations/
     └── zh_CN.json
 ```

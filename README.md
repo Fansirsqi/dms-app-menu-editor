@@ -162,7 +162,13 @@ Without a file dialog, commands and icon names can still be entered manually.
 - Deletion removes the file directly; it does not use the trash.
 - Only the user application directory is written. System `.desktop` files are never modified.
 - The plugin lists all entries from the XDG directories; the system menu may additionally filter `OnlyShowIn`/`NotShowIn`/`TryExec`.
-- The `scan.py` scan takes roughly 70 ms for ~280 entries on a typical system; editing reads only the selected file.
+- The `scan.py` scan takes roughly 60 ms for ~280 entries on a typical system; editing reads only the selected file.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
+
+Screenshots may contain third-party application icons and logos. Those remain the property of their respective owners and are used for identification only; the MIT license covers the plugin code and documentation, not third-party trademarks.
 
 ## File structure
 
@@ -178,6 +184,7 @@ AppMenuEditor/
 ├── screenshot-editor.png
 ├── README.md
 ├── README.zh.md
+├── LICENSE
 └── translations/
     └── zh_CN.json
 ```
