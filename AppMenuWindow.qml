@@ -296,14 +296,19 @@ PanelWindow {
         visible: root.visible && root.cardW > 0 && root.cardH > 0
         z: 20
         cursorShape: resizeCursor
+        hoverEnabled: true
+        preventStealing: true
 
         onPressed: {
-            root.beginResize(mode, mouse.scenePosition.x, mouse.scenePosition.y);
+            const point = mapToItem(null, mouse.x, mouse.y);
+            root.beginResize(mode, point.x, point.y);
             mouse.accepted = true;
         }
         onPositionChanged: {
-            if (pressed)
-                root.updateResize(mouse.scenePosition.x, mouse.scenePosition.y);
+            if (!pressed)
+                return;
+            const point = mapToItem(null, mouse.x, mouse.y);
+            root.updateResize(point.x, point.y);
         }
         onReleased: root.endResize()
         onCanceled: root.endResize()
