@@ -41,7 +41,7 @@ dms ipc call appMenuEditor toggle
 dms ipc call appMenuEditor close
 ```
 
-悬浮层使用 Wayland layer-shell，始终浮在普通窗口上方，按住顶部标题栏可以拖到屏幕任意位置；点击其他应用或打开文件选择器时不会自动收起。它不是普通平铺窗口。点右上角 **X** 或执行 `close` 关闭。
+悬浮层使用 Wayland layer-shell，始终浮在普通窗口上方，按住顶部标题栏可以拖到屏幕任意位置；点击其他应用或打开文件选择器时不会自动收起。拖动四边或四角可以调整大小。透明度和模糊跟随 DMS 的悬浮窗口设置。它不是普通平铺窗口。点右上角 **X** 或执行 `close` 关闭。
 
 ## 数据来源
 
@@ -67,6 +67,8 @@ $XDG_DATA_DIRS/*/applications
 
 - 列出用户目录和系统目录中的 `.desktop` 条目（XDG 应用目录）
 - 悬浮 layer-shell 面板，可拖到屏幕任意位置，切换焦点不会自动收起
+- 支持拖动四边和四角调整大小
+- 跟随 DMS 的悬浮窗口透明度和模糊设置
 - 默认隐藏 `Hidden=true` / `NoDisplay=true` 条目，可在插件设置中打开显示
 - 用户目录中的同名条目优先于系统条目（符合 XDG 规则）
 - 系统条目显示「系统」标记；编辑保存时会在用户目录创建同名覆盖项

@@ -945,7 +945,7 @@ DashTabComponent {
             anchors.bottomMargin: Theme.spacingS
             pad: 0
             clipContent: true
-            color: Theme.withAlpha(Theme.surfaceContainerHigh, 0.6)
+            color: root.embedded ? "transparent" : Theme.withAlpha(Theme.surfaceContainerHigh, 0.6)
             border.width: 0
 
             ListView {

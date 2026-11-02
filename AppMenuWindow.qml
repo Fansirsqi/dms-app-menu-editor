@@ -22,9 +22,21 @@ PanelWindow {
 
     readonly property real screenWidth: screen?.width ?? width
     readonly property real screenHeight: screen?.height ?? height
-    readonly property real cardWidth: Math.max(320, Math.min(920, screenWidth - Theme.spacingXL * 2))
-    readonly property real cardHeight: Math.max(360, Math.min(760, screenHeight - Theme.spacingXL * 2))
+    readonly property real defaultCardWidth: Math.max(320, Math.min(920, screenWidth - Theme.spacingXL * 2))
+    readonly property real defaultCardHeight: Math.max(360, Math.min(760, screenHeight - Theme.spacingXL * 2))
+    readonly property real minCardWidth: Math.min(520, Math.max(320, screenWidth - Theme.spacingS * 2))
+    readonly property real minCardHeight: Math.min(420, Math.max(320, screenHeight - Theme.spacingS * 2))
     readonly property real contentScale: 0.9
+
+    property real cardW: 0
+    property real cardH: 0
+    property string resizeMode: ""
+    property real resizeStartW: 0
+    property real resizeStartH: 0
+    property real resizeStartX: 0
+    property real resizeStartY: 0
+    property real resizeStartSceneX: 0
+    property real resizeStartSceneY: 0
 
     objectName: "appMenuEditorOverlay"
     screen: targetScreen
@@ -45,6 +57,21 @@ PanelWindow {
 
     mask: Region {
         item: card
+    }
+
+    WindowBlur {
+        targetWindow: root
+        blurEnabled: root.visible
+        blurX: card.x
+        blurY: card.y
+        blurWidth: card.width
+        blurHeight: card.height
+        blurRadius: card.radius
+        clipEnabled: true
+        clipX: card.x
+        clipY: card.y
+        clipWidth: card.width
+        clipHeight: card.height
     }
 
     onWidthChanged: {
@@ -70,6 +97,10 @@ PanelWindow {
     function centerCard() {
         if (screenWidth <= 0 || screenHeight <= 0)
             return;
+        const maxW = Math.max(minCardWidth, screenWidth - Theme.spacingS * 2);
+        const maxH = Math.max(minCardHeight, screenHeight - Theme.spacingS * 2);
+        cardW = Math.max(minCardWidth, Math.min(cardW > 0 ? cardW : defaultCardWidth, maxW));
+        cardH = Math.max(minCardHeight, Math.min(cardH > 0 ? cardH : defaultCardHeight, maxH));
         card.x = Math.max(Theme.spacingS, (screenWidth - card.width) / 2 - 80);
         card.y = Math.max(Theme.spacingS, (screenHeight - card.height) / 2 - 60);
         positioned = true;
@@ -78,8 +109,58 @@ PanelWindow {
     function clampCard() {
         if (!positioned || screenWidth <= 0 || screenHeight <= 0)
             return;
+        const maxW = Math.max(minCardWidth, screenWidth - Theme.spacingS * 2);
+        const maxH = Math.max(minCardHeight, screenHeight - Theme.spacingS * 2);
+        cardW = Math.max(minCardWidth, Math.min(cardW, maxW));
+        cardH = Math.max(minCardHeight, Math.min(cardH, maxH));
         card.x = Math.max(Theme.spacingS, Math.min(card.x, screenWidth - card.width - Theme.spacingS));
         card.y = Math.max(Theme.spacingS, Math.min(card.y, screenHeight - card.height - Theme.spacingS));
+    }
+
+    function beginResize(mode, sceneX, sceneY) {
+        resizeMode = mode;
+        resizeStartW = card.width;
+        resizeStartH = card.height;
+        resizeStartX = card.x;
+        resizeStartY = card.y;
+        resizeStartSceneX = sceneX;
+        resizeStartSceneY = sceneY;
+        userMoved = true;
+    }
+
+    function endResize() {
+        resizeMode = "";
+    }
+
+    function updateResize(sceneX, sceneY) {
+        if (resizeMode.length === 0)
+            return;
+        const dx = sceneX - resizeStartSceneX;
+        const dy = sceneY - resizeStartSceneY;
+        const minW = Math.min(minCardWidth, screenWidth - Theme.spacingS * 2);
+        const minH = Math.min(minCardHeight, screenHeight - Theme.spacingS * 2);
+        let x = resizeStartX;
+        let y = resizeStartY;
+        let w = resizeStartW;
+        let h = resizeStartH;
+
+        if (resizeMode.indexOf("left") >= 0) {
+            x = Math.max(Theme.spacingS, Math.min(resizeStartX + dx, resizeStartX + resizeStartW - minW));
+            w = resizeStartW + (resizeStartX - x);
+        }
+        if (resizeMode.indexOf("right") >= 0)
+            w = Math.max(minW, Math.min(resizeStartW + dx, screenWidth - resizeStartX - Theme.spacingS));
+        if (resizeMode.indexOf("top") >= 0) {
+            y = Math.max(Theme.spacingS, Math.min(resizeStartY + dy, resizeStartY + resizeStartH - minH));
+            h = resizeStartH + (resizeStartY - y);
+        }
+        if (resizeMode.indexOf("bottom") >= 0)
+            h = Math.max(minH, Math.min(resizeStartH + dy, screenHeight - resizeStartY - Theme.spacingS));
+
+        cardW = w;
+        cardH = h;
+        card.x = x;
+        card.y = y;
     }
 
     function show() {
@@ -118,10 +199,10 @@ PanelWindow {
 
         x: Theme.spacingS
         y: Theme.spacingS
-        width: root.cardWidth
-        height: root.cardHeight
+        width: root.cardW
+        height: root.cardH
         radius: Theme.cornerRadiusL
-        color: Theme.surfaceContainerHigh
+        color: Theme.floatingWindowSurface
         border.width: Theme.layerOutlineWidth
         border.color: Theme.outlineMedium
         clip: true
@@ -204,6 +285,100 @@ PanelWindow {
                 }
             }
         }
+    }
+
+    component ResizeHandle: MouseArea {
+        id: handle
+
+        required property string mode
+        property int resizeCursor: Qt.ArrowCursor
+
+        visible: root.visible && root.cardW > 0 && root.cardH > 0
+        z: 20
+        cursorShape: resizeCursor
+
+        onPressed: {
+            root.beginResize(mode, mouse.scenePosition.x, mouse.scenePosition.y);
+            mouse.accepted = true;
+        }
+        onPositionChanged: {
+            if (pressed)
+                root.updateResize(mouse.scenePosition.x, mouse.scenePosition.y);
+        }
+        onReleased: root.endResize()
+        onCanceled: root.endResize()
+    }
+
+    ResizeHandle {
+        mode: "left"
+        resizeCursor: Qt.SizeHorCursor
+        x: card.x
+        y: card.y + Theme.spacingM
+        width: Theme.spacingS
+        height: Math.max(0, card.height - Theme.spacingM * 2)
+    }
+
+    ResizeHandle {
+        mode: "right"
+        resizeCursor: Qt.SizeHorCursor
+        x: card.x + card.width - Theme.spacingS
+        y: card.y + Theme.spacingM
+        width: Theme.spacingS
+        height: Math.max(0, card.height - Theme.spacingM * 2)
+    }
+
+    ResizeHandle {
+        mode: "top"
+        resizeCursor: Qt.SizeVerCursor
+        x: card.x + Theme.spacingM
+        y: card.y
+        width: Math.max(0, card.width - Theme.spacingM * 2)
+        height: Theme.spacingS
+    }
+
+    ResizeHandle {
+        mode: "bottom"
+        resizeCursor: Qt.SizeVerCursor
+        x: card.x + Theme.spacingM
+        y: card.y + card.height - Theme.spacingS
+        width: Math.max(0, card.width - Theme.spacingM * 2)
+        height: Theme.spacingS
+    }
+
+    ResizeHandle {
+        mode: "top-left"
+        resizeCursor: Qt.SizeFDiagCursor
+        x: card.x
+        y: card.y
+        width: Theme.spacingM
+        height: Theme.spacingM
+    }
+
+    ResizeHandle {
+        mode: "top-right"
+        resizeCursor: Qt.SizeBDiagCursor
+        x: card.x + card.width - Theme.spacingM
+        y: card.y
+        width: Theme.spacingM
+        height: Theme.spacingM
+    }
+
+    ResizeHandle {
+        mode: "bottom-left"
+        resizeCursor: Qt.SizeBDiagCursor
+        x: card.x
+        y: card.y + card.height - Theme.spacingM
+        width: Theme.spacingM
+        height: Theme.spacingM
+    }
+
+    ResizeHandle {
+        mode: "bottom-right"
+        resizeCursor: Qt.SizeFDiagCursor
+        x: card.x + card.width - Theme.spacingM
+        y: card.y + card.height - Theme.spacingM
+        width: Theme.spacingM
+        height: Theme.spacingM
     }
 
     IpcHandler {

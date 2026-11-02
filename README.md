@@ -12,6 +12,8 @@ A Dux Shell (DMS 2.0) plugin for browsing, creating, and editing application lau
 
 - Scans user and system XDG application directories, not just `~/.local/share/applications`
 - Floating layer-shell overlay, draggable anywhere and stays open when focus moves
+- Resizable from any edge or corner
+- Follows DMS floating-window transparency and blur settings
 - Hides `Hidden=true` and `NoDisplay=true` entries by default, matching the system app menu
 - User entries override system entries with the same file name (XDG precedence)
 - System entries are marked with a **System** badge
@@ -72,7 +74,7 @@ dms ipc call appMenuEditor toggle
 dms ipc call appMenuEditor close
 ```
 
-The overlay uses a Wayland layer-shell surface, so it floats above normal windows, can be dragged anywhere by its header, and stays open when you click another app or open a file picker. It is not a tiled window. Close it with the **X** button or the `close` IPC command.
+The overlay uses a Wayland layer-shell surface, so it floats above normal windows, can be dragged anywhere by its header, and stays open when you click another app or open a file picker. Drag any edge or corner to resize it. Its transparency and blur follow the DMS floating-window settings. It is not a tiled window. Close it with the **X** button or the `close` IPC command.
 
 ## Data sources
 
