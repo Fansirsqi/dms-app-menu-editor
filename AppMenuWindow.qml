@@ -7,6 +7,7 @@ import Quickshell.Io
 import qs.Common
 import qs.Services
 import qs.DCommon.Widgets
+import qs.Widgets as Widgets
 
 PanelWindow {
     id: root
@@ -22,14 +23,14 @@ PanelWindow {
 
     readonly property real screenWidth: screen?.width ?? width
     readonly property real screenHeight: screen?.height ?? height
-    readonly property real defaultCardWidth: Math.max(320, Math.min(920, screenWidth - Theme.spacingXL * 2))
-    readonly property real defaultCardHeight: Math.max(360, Math.min(760, screenHeight - Theme.spacingXL * 2))
-    readonly property real minCardWidth: Math.min(520, Math.max(320, screenWidth - Theme.spacingS * 2))
-    readonly property real minCardHeight: Math.min(420, Math.max(320, screenHeight - Theme.spacingS * 2))
-    readonly property real contentScale: 0.9
+    readonly property real defaultCardWidth: Math.max(Theme.fontSizeMedium * 30, Math.min(Theme.fontSizeMedium * 60, screenWidth - Theme.spacingXL * 2))
+    readonly property real defaultCardHeight: Math.max(Theme.fontSizeMedium * 24, Math.min(Theme.fontSizeMedium * 50, screenHeight - Theme.spacingXL * 2))
+    readonly property real minCardWidth: Math.max(Theme.fontSizeMedium * 24, Math.min(Theme.fontSizeMedium * 38, screenWidth - Theme.spacingS * 2))
+    readonly property real minCardHeight: Math.max(Theme.fontSizeMedium * 20, Math.min(Theme.fontSizeMedium * 30, screenHeight - Theme.spacingS * 2))
 
     property real cardW: 0
     property real cardH: 0
+    property bool uiLoaded: false
     property string resizeMode: ""
     property real resizeStartW: 0
     property real resizeStartH: 0
@@ -59,7 +60,7 @@ PanelWindow {
         item: card
     }
 
-    WindowBlur {
+    Widgets.WindowBlur {
         targetWindow: root
         blurEnabled: root.visible
         blurX: card.x
@@ -101,8 +102,8 @@ PanelWindow {
         const maxH = Math.max(minCardHeight, screenHeight - Theme.spacingS * 2);
         cardW = Math.max(minCardWidth, Math.min(cardW > 0 ? cardW : defaultCardWidth, maxW));
         cardH = Math.max(minCardHeight, Math.min(cardH > 0 ? cardH : defaultCardHeight, maxH));
-        card.x = Math.max(Theme.spacingS, (screenWidth - card.width) / 2 - 80);
-        card.y = Math.max(Theme.spacingS, (screenHeight - card.height) / 2 - 60);
+        card.x = Math.max(Theme.spacingS, (screenWidth - card.width) / 2 - Theme.spacingXL * 3);
+        card.y = Math.max(Theme.spacingS, (screenHeight - card.height) / 2 - Theme.spacingXL * 2);
         positioned = true;
     }
 
@@ -169,6 +170,7 @@ PanelWindow {
         if (screenName !== lastScreenName)
             userMoved = false;
         targetScreen = focused;
+        uiLoaded = true;
         visible = true;
         if (tabLoader.item && tabLoader.item.mode === "list")
             tabLoader.item.searchText = "";
@@ -259,29 +261,21 @@ PanelWindow {
             anchors.margins: Theme.spacingM
             clip: true
 
-            Item {
-                id: scaledCanvas
+            Loader {
+                id: tabLoader
 
-                width: parent.width / root.contentScale
-                height: parent.height / root.contentScale
-                anchors.centerIn: parent
-                scale: root.contentScale
-                transformOrigin: Item.Center
+                anchors.fill: parent
+                active: root.uiLoaded
+                source: "AppMenuTab.qml"
+                asynchronous: false
 
-                Loader {
-                    id: tabLoader
-
-                    anchors.fill: parent
-                    source: "AppMenuTab.qml"
-                    asynchronous: false
-
-                    onLoaded: {
-                        item.embedded = true;
-                        item.entryId = root.entryId;
-                        item.pluginId = root.pluginId;
-                        item.pluginService = root.pluginService;
+                onLoaded: {
+                    item.embedded = true;
+                    item.entryId = root.entryId;
+                    item.pluginId = root.pluginId;
+                    item.pluginService = root.pluginService;
+                    if (root.visible)
                         Qt.callLater(() => item.focusTarget?.forceActiveFocus(Qt.OtherFocusReason));
-                    }
                 }
             }
         }
