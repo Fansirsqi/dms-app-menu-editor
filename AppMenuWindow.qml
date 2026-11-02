@@ -24,6 +24,7 @@ PanelWindow {
     readonly property real screenHeight: screen?.height ?? height
     readonly property real cardWidth: Math.max(320, Math.min(920, screenWidth - Theme.spacingXL * 2))
     readonly property real cardHeight: Math.max(360, Math.min(760, screenHeight - Theme.spacingXL * 2))
+    readonly property real contentScale: 0.9
 
     objectName: "appMenuEditorOverlay"
     screen: targetScreen
@@ -69,8 +70,8 @@ PanelWindow {
     function centerCard() {
         if (screenWidth <= 0 || screenHeight <= 0)
             return;
-        card.x = Math.max(Theme.spacingS, (screenWidth - card.width) / 2);
-        card.y = Math.max(Theme.spacingS, (screenHeight - card.height) / 2);
+        card.x = Math.max(Theme.spacingS, (screenWidth - card.width) / 2 - 80);
+        card.y = Math.max(Theme.spacingS, (screenHeight - card.height) / 2 - 60);
         positioned = true;
     }
 
@@ -132,15 +133,14 @@ PanelWindow {
             height: Theme.iconButtonSize
 
             StyledText {
-                anchors.left: parent.left
-                anchors.right: closeButton.left
+                anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: Theme.spacingM
-                anchors.rightMargin: Theme.spacingS
+                width: Math.max(0, parent.width - closeButton.width * 2 - Theme.spacingM * 2)
                 text: I18n.trFor(root.pluginId, "App Menu Editor")
                 font.pixelSize: Theme.fontSizeLarge
                 font.weight: Font.Medium
                 color: Theme.surfaceText
+                horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
             }
 
@@ -166,32 +166,42 @@ PanelWindow {
                 tooltipText: I18n.trFor(root.pluginId, "Close")
                 onClicked: root.hide()
             }
-
-            Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                height: 1
-                color: Theme.outlineVariant
-            }
         }
 
-        Loader {
-            id: tabLoader
+        Item {
+            id: canvas
 
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: header.bottom
             anchors.bottom: parent.bottom
-            source: "AppMenuTab.qml"
-            asynchronous: false
+            anchors.margins: Theme.spacingM
+            clip: true
 
-            onLoaded: {
-                item.embedded = true;
-                item.entryId = root.entryId;
-                item.pluginId = root.pluginId;
-                item.pluginService = root.pluginService;
-                Qt.callLater(() => item.focusTarget?.forceActiveFocus(Qt.OtherFocusReason));
+            Item {
+                id: scaledCanvas
+
+                width: parent.width / root.contentScale
+                height: parent.height / root.contentScale
+                anchors.centerIn: parent
+                scale: root.contentScale
+                transformOrigin: Item.Center
+
+                Loader {
+                    id: tabLoader
+
+                    anchors.fill: parent
+                    source: "AppMenuTab.qml"
+                    asynchronous: false
+
+                    onLoaded: {
+                        item.embedded = true;
+                        item.entryId = root.entryId;
+                        item.pluginId = root.pluginId;
+                        item.pluginService = root.pluginService;
+                        Qt.callLater(() => item.focusTarget?.forceActiveFocus(Qt.OtherFocusReason));
+                    }
+                }
             }
         }
     }

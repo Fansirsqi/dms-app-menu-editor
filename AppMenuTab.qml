@@ -77,6 +77,7 @@ DashTabComponent {
 
     property bool confirmDelete: false
     property string errorText: ""
+    property bool autoOpenPending: false
 
     property var entries: []
     property var knownFileNames: []
@@ -678,6 +679,21 @@ DashTabComponent {
         Qt.openUrlExternally(Paths.toFileUrl(appsDir));
     }
 
+    function requestFloatingOverlay() {
+        if (embedded || autoOpenPending)
+            return;
+        autoOpenPending = true;
+        Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"]);
+        if (dashHost)
+            dashHost.dashVisible = false;
+        Qt.callLater(() => autoOpenPending = false);
+    }
+
+    onVisibleChanged: {
+        if (visible)
+            Qt.callLater(root.requestFloatingOverlay);
+    }
+
     // ---------------------------------------------------------------- keyboard
 
     function handleKeyEvent(event) {
@@ -830,6 +846,8 @@ DashTabComponent {
             else if (line.endsWith("zenity"))
                 root.dialogTool = "zenity";
         }, 0, 3000);
+        if (visible)
+            Qt.callLater(root.requestFloatingOverlay);
     }
 
     // ---------------------------------------------------------------- list view
