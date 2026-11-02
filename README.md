@@ -2,15 +2,16 @@
 
 English | [中文](README.zh.md)
 
-| Browse applications | Edit a launcher |
+| Floating overlay – browse | Floating overlay – edit |
 | --- | --- |
-| ![Browse applications](screenshot-list.png) | ![Edit a launcher](screenshot-editor.png) |
+| ![Floating overlay browse](screenshot-list.png) | ![Floating overlay edit](screenshot-editor.png) |
 
 A Dux Shell (DMS 2.0) plugin for browsing, creating, and editing application launchers (`.desktop` files) directly from the dash. It is useful for apps that ship without a launcher, and for overriding system entries without touching `/usr/share`.
 
 ## Features
 
 - Scans user and system XDG application directories, not just `~/.local/share/applications`
+- Floating layer-shell overlay, draggable anywhere and stays open when focus moves
 - Hides `Hidden=true` and `NoDisplay=true` entries by default, matching the system app menu
 - User entries override system entries with the same file name (XDG precedence)
 - System entries are marked with a **System** badge
@@ -61,13 +62,17 @@ dms ipc call plugins reload appMenuEditor
 
 ## Open
 
-- Dash tab: **App Menu Editor**
-- Launcher: type `!app` and choose **App Menu Editor**
+- Launcher: type `!app` and choose **App Menu Editor** — opens the floating overlay
+- Dash tab: **App Menu Editor** — includes an **Open in a floating window** button
 - CLI:
 
 ```bash
-dms ipc call dash open plugin_appMenuEditor
+dms ipc call appMenuEditor open
+dms ipc call appMenuEditor toggle
+dms ipc call appMenuEditor close
 ```
+
+The overlay uses a Wayland layer-shell surface, so it floats above normal windows, can be dragged anywhere by its header, and stays open when you click another app or open a file picker. It is not a tiled window. Close it with the **X** button or the `close` IPC command.
 
 ## Data sources
 

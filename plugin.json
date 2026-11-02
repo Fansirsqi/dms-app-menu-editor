@@ -1,15 +1,20 @@
 {
     "id": "appMenuEditor",
     "name": "App Menu Editor",
-    "description": "Browse application launchers from user and system directories, and create or edit user-level .desktop overrides with environment variables and automatic icon detection",
+    "description": "Browse application launchers from user and system directories in a draggable floating overlay, and create or edit user-level .desktop overrides with environment variables and automatic icon detection",
     "version": "1.0.0",
     "author": "fansir",
     "type": "composite",
-    "capabilities": ["dash-tab", "launcher"],
+    "capabilities": [
+        "dash-tab",
+        "launcher",
+        "daemon"
+    ],
     "icon": "apps",
     "components": {
         "dash": "./AppMenuTab.qml",
-        "launcher": "./AppMenuLauncher.qml"
+        "launcher": "./AppMenuLauncher.qml",
+        "daemon": "./AppMenuWindow.qml"
     },
     "dash": {
         "title": "App Menu Editor",
@@ -25,7 +30,11 @@
         ]
     },
     "trigger": "!app",
-    "dependencies": ["python3"],
-    "permissions": ["process"],
+    "dependencies": [
+        "python3"
+    ],
+    "permissions": [
+        "process"
+    ],
     "requires_dms": ">=2.0.0"
 }

@@ -8,6 +8,9 @@
     "Create or edit application menu entries (desktop files)": {
         "Create or edit application menu entries (desktop files)": "创建或编辑应用菜单启动项（.desktop 文件）"
     },
+    "Open the floating App Menu Editor": {
+        "Open the floating App Menu Editor": "打开悬浮的应用菜单编辑器"
+    },
     "Launch entries for apps that ship no .desktop file": {
         "Launch entries for apps that ship no .desktop file": "为不提供 .desktop 文件的应用创建启动项"
     },
@@ -52,6 +55,9 @@
     },
     "Open launcher folder": {
         "Open launcher folder": "打开启动项目录"
+    },
+    "Open in a floating window": {
+        "Open in a floating window": "在悬浮窗口中打开"
     },
     "Name": {
         "Name": "名称"

@@ -16,7 +16,7 @@ QtObject {
         const item = {
             name: I18n.trFor("appMenuEditor", "App Menu Editor"),
             icon: "svg:" + Qt.resolvedUrl("icon.svg"),
-            comment: I18n.trFor("appMenuEditor", "Create or edit application menu entries (desktop files)"),
+            comment: I18n.trFor("appMenuEditor", "Open the floating App Menu Editor"),
             action: "open",
             categories: [I18n.trFor("appMenuEditor", "App Menu Editor")]
         };
@@ -29,6 +29,6 @@ QtObject {
     function executeItem(item) {
         if (!item || item.action !== "open")
             return;
-        Quickshell.execDetached(["dms", "ipc", "call", "dash", "open", "plugin_appMenuEditor"]);
+        Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"]);
     }
 }

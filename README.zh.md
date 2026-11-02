@@ -2,9 +2,9 @@
 
 [English](README.md) | 中文
 
-| 浏览应用 | 编辑启动项 |
+| 悬浮层：浏览应用 | 悬浮层：编辑启动项 |
 | --- | --- |
-| ![浏览应用](screenshot-list.png) | ![编辑启动项](screenshot-editor.png) |
+| ![悬浮层浏览应用](screenshot-list.png) | ![悬浮层编辑启动项](screenshot-editor.png) |
 
 Dux Shell (DMS 2.0) 插件：在 Dash 里浏览用户和系统应用目录，创建、编辑、删除应用启动项（`.desktop` 文件），适合给没有自带 `.desktop` 文件的应用补一个启动器。
 
@@ -31,14 +31,17 @@ dms ipc call plugins reload appMenuEditor
 
 ## 打开
 
-- Dash 顶部标签：**应用菜单编辑器**
-- 应用启动器（Launcher）搜索：输入 `!app`，选择 **应用菜单编辑器**
-
-命令行直接打开：
+- 应用启动器搜索：输入 `!app`，选择 **应用菜单编辑器**，会打开悬浮层
+- Dash 顶部标签：**应用菜单编辑器**，里面有「在悬浮窗口中打开」按钮
+- 命令行：
 
 ```bash
-dms ipc call dash open plugin_appMenuEditor
+dms ipc call appMenuEditor open
+dms ipc call appMenuEditor toggle
+dms ipc call appMenuEditor close
 ```
+
+悬浮层使用 Wayland layer-shell，始终浮在普通窗口上方，按住顶部标题栏可以拖到屏幕任意位置；点击其他应用或打开文件选择器时不会自动收起。它不是普通平铺窗口。点右上角 **X** 或执行 `close` 关闭。
 
 ## 数据来源
 
@@ -63,6 +66,7 @@ $XDG_DATA_DIRS/*/applications
 ## 功能
 
 - 列出用户目录和系统目录中的 `.desktop` 条目（XDG 应用目录）
+- 悬浮 layer-shell 面板，可拖到屏幕任意位置，切换焦点不会自动收起
 - 默认隐藏 `Hidden=true` / `NoDisplay=true` 条目，可在插件设置中打开显示
 - 用户目录中的同名条目优先于系统条目（符合 XDG 规则）
 - 系统条目显示「系统」标记；编辑保存时会在用户目录创建同名覆盖项

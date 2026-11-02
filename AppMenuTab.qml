@@ -56,6 +56,7 @@ DashTabComponent {
     // ---------------------------------------------------------------- state
 
     property string mode: "list" // list | edit
+    property bool embedded: false
     property bool editing: false
     property bool editingSystem: false
     property string editPath: ""
@@ -705,6 +706,11 @@ DashTabComponent {
             action: () => root.startCreate()
         },
         {
+            label: t("Open in a floating window"),
+            iconName: "open_in_new",
+            action: () => Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"])
+        },
+        {
             label: t("Refresh"),
             iconName: "refresh",
             action: () => root.scanApplications()
@@ -843,7 +849,8 @@ DashTabComponent {
 
             Column {
                 anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - newButton.width - folderButton.width - refreshButton.width - Theme.spacingM * 3
+                visible: !root.embedded
+                width: parent.width - newButton.width - folderButton.width - refreshButton.width - floatButton.width - Theme.spacingM * 4
                 spacing: 2
 
                 StyledText {
@@ -862,6 +869,15 @@ DashTabComponent {
                     elide: Text.ElideRight
                     width: parent.width
                 }
+            }
+
+            DActionButton {
+                id: floatButton
+                anchors.verticalCenter: parent.verticalCenter
+                visible: !root.embedded
+                iconName: "open_in_new"
+                tooltipText: root.t("Open in a floating window")
+                onClicked: Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"])
             }
 
             DActionButton {
