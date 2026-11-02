@@ -155,6 +155,7 @@ AppMenuEditor/
 ├── plugin.json
 ├── AppMenuTab.qml          # Dash 标签页（列表 + 编辑器）
 ├── AppMenuLauncher.qml     # !app 启动器入口
+├── AppMenuWindow.qml       # 可拖动的 layer-shell 悬浮层
 ├── scan.py                 # 一次性扫描/解析所有应用目录
 ├── icon.svg                # 启动器彩色图标
 ├── screenshot.png          # 注册表预览图（列表 + 编辑器）

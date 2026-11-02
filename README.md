@@ -182,6 +182,7 @@ AppMenuEditor/
 ├── plugin.json
 ├── AppMenuTab.qml          # Dash tab: list + editor
 ├── AppMenuLauncher.qml     # !app launcher entry
+├── AppMenuWindow.qml       # draggable layer-shell overlay
 ├── scan.py                 # one-shot application scanner
 ├── icon.svg                # colored launcher icon
 ├── screenshot.png          # registry preview (list + editor)
