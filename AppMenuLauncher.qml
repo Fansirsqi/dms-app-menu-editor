@@ -26,9 +26,18 @@ QtObject {
         return haystack.indexOf(needle) >= 0 ? [item] : [];
     }
 
+    function openOverlay() {
+        const daemon = pluginService?.pluginDaemonInstances?.[pluginId];
+        if (daemon && typeof daemon.show === "function") {
+            daemon.show();
+            return;
+        }
+        Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"]);
+    }
+
     function executeItem(item) {
         if (!item || item.action !== "open")
             return;
-        Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"]);
+        openOverlay();
     }
 }

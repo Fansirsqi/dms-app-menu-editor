@@ -679,11 +679,20 @@ DashTabComponent {
         Qt.openUrlExternally(Paths.toFileUrl(appsDir));
     }
 
+    function showFloatingOverlay() {
+        const daemon = PluginService.pluginDaemonInstances?.["appMenuEditor"];
+        if (daemon && typeof daemon.show === "function") {
+            daemon.show();
+            return;
+        }
+        Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"]);
+    }
+
     function requestFloatingOverlay() {
         if (embedded || autoOpenPending)
             return;
         autoOpenPending = true;
-        Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"]);
+        showFloatingOverlay();
         if (dashHost)
             dashHost.dashVisible = false;
         Qt.callLater(() => autoOpenPending = false);
@@ -724,7 +733,7 @@ DashTabComponent {
         {
             label: t("Open in a floating window"),
             iconName: "open_in_new",
-            action: () => Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"])
+            action: () => root.showFloatingOverlay()
         },
         {
             label: t("Refresh"),
@@ -895,7 +904,7 @@ DashTabComponent {
                 visible: !root.embedded
                 iconName: "open_in_new"
                 tooltipText: root.t("Open in a floating window")
-                onClicked: Quickshell.execDetached(["dms", "ipc", "call", "appMenuEditor", "open"])
+                onClicked: root.showFloatingOverlay()
             }
 
             DActionButton {
