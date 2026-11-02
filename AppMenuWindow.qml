@@ -208,6 +208,18 @@ PanelWindow {
         border.width: Theme.layerOutlineWidth
         border.color: Theme.outlineMedium
         clip: true
+        focus: true
+
+        Keys.onPressed: event => {
+            if (tabLoader.item && tabLoader.item.handleKeyEvent(event)) {
+                event.accepted = true;
+                return;
+            }
+            if (event.key === Qt.Key_Escape) {
+                root.hide();
+                event.accepted = true;
+            }
+        }
 
         Item {
             id: header

@@ -869,7 +869,7 @@ DashTabComponent {
                 anchors.verticalCenter: parent.verticalCenter
                 visible: !root.embedded
                 width: parent.width - newButton.width - folderButton.width - refreshButton.width - floatButton.width - Theme.spacingM * 4
-                spacing: 2
+                spacing: Theme.spacingXXS
 
                 StyledText {
                     text: root.t("App Menu Editor")
@@ -990,7 +990,7 @@ DashTabComponent {
                         Column {
                             anchors.verticalCenter: parent.verticalCenter
                             width: parent.width - root.listIconSize - badgeRow.width - chevron.width - Theme.spacingM * 3
-                            spacing: 2
+                            spacing: Theme.spacingXXS
 
                             StyledText {
                                 width: parent.width
@@ -1190,8 +1190,8 @@ DashTabComponent {
 
             Column {
                 anchors.verticalCenter: parent.verticalCenter
-                width: parent.width - 40 - Theme.spacingS
-                spacing: 2
+                width: parent.width - Theme.iconButtonSize - Theme.spacingS
+                spacing: Theme.spacingXXS
 
                 StyledText {
                     width: parent.width
